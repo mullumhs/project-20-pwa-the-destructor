@@ -1,6 +1,10 @@
-from flask import Flask
-from models import db
+from flask import Flask, render_template, request, redirect, url_for, flash
+from models import db, Songs, Album
 from views import init_routes
+
+
+# venv\Scripts\activate
+# python models.py
 
 # Create the Flask app and configure it
 app = Flask(__name__)
@@ -11,6 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Initialise the database and routes
 db.init_app(app)
 init_routes(app)
+
 
 if __name__ == '__main__':
     with app.app_context():

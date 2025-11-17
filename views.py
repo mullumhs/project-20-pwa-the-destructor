@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from models import db # Also import your database model here
+from models import db, Songs, Album
 
 # Define your routes inside the 'init_routes' function
 # Feel free to rename the routes and functions as you see fit
@@ -11,15 +11,41 @@ def init_routes(app):
 
     @app.route('/', methods=['GET'])
     def get_items():
-        # This route should retrieve all items from the database and display them on the page.
-        return render_template('index.html', message='Displaying all items')
+        albums = Album.query.all()
+        album_display = {}
+
+        for album in albums:
+            album_display[album['id']] = {album['title'], album['artist'], album['album'], album['year'], album['genre']}
+
+        return render_template('index.html', message=f'{album_display}')
 
 
 
-    @app.route('/add', methods=['POST'])
+    @app.route('/add', methods=['GET', 'POST'])
     def create_item():
-        # This route should handle adding a new item to the database.
-        return render_template('index.html', message='Item added successfully')
+        if request.method == 'POST':
+
+            new_album = Album(
+
+                title=request.form['title'],
+
+                artist=request.form['artist'],
+
+                year=int(request.form['year']),
+
+                rating=float(request.form['rating']),
+
+                genre=request.form['genre']
+
+            )
+
+            db.session.add(new_album)
+
+            db.session.commit()
+
+            return redirect(url_for('index'))
+
+        return render_template('add.html')
 
 
 
