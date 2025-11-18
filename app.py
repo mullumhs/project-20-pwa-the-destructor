@@ -4,7 +4,7 @@ from views import init_routes
 
 
 # venv\Scripts\activate
-# python models.py
+# python app.py
 
 # Create the Flask app and configure it
 app = Flask(__name__)

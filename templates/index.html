@@ -7,7 +7,40 @@
   </head>
   <body>
     <h1>Albums in Database</h1>
+    <table>
 
-    <p>{{ message }}</p>
+    <tr>
+
+        <th>Title     </th>
+
+        <th>Artists   </th>
+
+        <th>Year      </th>
+
+        <th>Rating    </th>
+
+        <th>Genre     </th>
+
+    </tr>
+
+    <p>{% for album in albums %}</p>
+
+    <tr>
+        
+        <td>{{ album.title }}</td>
+
+        <td>{{ album.artist }}</td>
+
+        <td>{{ album.year }}</td>
+
+        <td>{{ album.rating }}</td>
+
+        <td>{{ album.genre }}</td>
+
+    </tr>
+
+    {% endfor %}
+
+    </table>
   </body>
 </html>

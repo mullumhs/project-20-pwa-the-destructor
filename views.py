@@ -12,12 +12,8 @@ def init_routes(app):
     @app.route('/', methods=['GET'])
     def get_items():
         albums = Album.query.all()
-        album_display = {}
 
-        for album in albums:
-            album_display[album['id']] = {album['title'], album['artist'], album['album'], album['year'], album['genre']}
-
-        return render_template('index.html', message=f'{album_display}')
+        return render_template('index.html', albums=albums)
 
 
 
