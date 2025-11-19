@@ -25,3 +25,4 @@ class Album(db.Model):
     year = db.Column(db.Integer)
     rating = db.Column(db.Float)
     genre = db.Column(db.String(100))
+    image = db.Column(db.String(100), nullable=False)
