@@ -15,7 +15,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 def init_routes(app):
@@ -33,7 +33,6 @@ def init_routes(app):
         if request.method == 'POST':
             if 'file' not in request.files:
                 flash('No file part')
-                print("fail1")
                 return redirect(request.url)
             file = request.files['file']
             # If the user does not select a file, the browser submits an
@@ -45,7 +44,7 @@ def init_routes(app):
                 return redirect(request.url)
             if file and allowed_file(file.filename):
                 extension = file.filename.split(".")[-1]
-                new_filename = str(uuid.uuid4()+extension) 
+                new_filename = str(uuid.uuid4())+"."+extension
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
                 print("bazinga")
 
