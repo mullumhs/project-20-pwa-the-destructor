@@ -49,44 +49,30 @@
       </div>
     </nav>
 
+    <h1>Albums in the collection</h1>
 
-    <h1>Albums in Database</h1>
-    <table>
-
-    <tr>
-
-        <th>Title     </th>
-
-        <th>Artists   </th>
-
-        <th>Year      </th>
-
-        <th>Rating    </th>
-
-        <th>Genre     </th>
-
-    </tr>
-
-    <p>{% for album in albums %}</p>
-
-    <tr>
-        
-        <td>{{ album.title }}</td>
-
-        <td>{{ album.artist }}</td>
-
-        <td>{{ album.year }}</td>
-
-        <td>{{ album.rating }}</td>
-
-        <td>{{ album.genre }}</td>
-
-        <td> <img src="{{ url_for('static', filename='uploads/' ~ album.image) }}" alt="Profile Picture"> </td>
-
-    </tr>
-
+    <div class="container-fluid text-center">
+    {% for album in albums %}
+      {% if loop.index0 % 5 == 0 %}
+          <div class="row row-cols-5">
+      {% endif %}
+          <div class="col">
+              <div class="card" style="width: 18rem;" >
+                <img src="{{ url_for('static', filename='uploads/' ~ album.image) }}" alt="Profile Picture" class="card-img-top"  style="height:18rem;  object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ album.title }}</h5>
+                <p class="card-text">{{ album.artist }}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+              </div>
+            </div>
+          </div>
+      {% if loop.index0 % 5 == 4 %}
+        </div>
+      {% endif %}
     {% endfor %}
 
-    </table>
+    </div>
+
+
   </body>
 </html>
