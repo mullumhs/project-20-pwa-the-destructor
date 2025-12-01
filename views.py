@@ -2,6 +2,7 @@ from flask import render_template, request, redirect, url_for, flash
 from models import db, Songs, Album
 from werkzeug.utils import secure_filename
 import uuid
+import requests
 import os
 
 
@@ -26,6 +27,35 @@ def init_routes(app):
 
         return render_template('index.html', albums=albums)
 
+
+    
+    @app.route('/mb', methods=['GET'])
+    def get_musicb():
+        url = 'https://musicbrainz.org/ws/2/recording'
+        params = {
+            'query': 'artist:"Ed Sheeran" AND recording:"Shape of You"',
+            'fmt': 'json',
+            'inc': 'releases'
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        first_release = None
+
+        for rec in data.get('recordings', []):
+            for rel in rec.get('releases', []):
+                if rel.get('status') == 'Official' and rel.get('date'):
+                    if not first_release or rel['date'] < first_release['date']:
+                        first_release = {
+                            'title': rec['title'],
+                            'artist': rec['artist-credit'][0]['name'],
+                            'release': rel['title'],
+                            'date': rel['date'],
+                            'country': rel.get('country')
+                        }
+
+        return render_template('musicbrainz.html', data=first_release)
 
 
     @app.route('/add', methods=['GET', 'POST'])
@@ -72,6 +102,8 @@ def init_routes(app):
             return redirect(url_for('get_items'))
 
         return render_template('add.html')
+
+    
 
 
 
