@@ -81,9 +81,15 @@
       {% endif %}
           <div class="col">
               <div class="card" style="width: 18rem;" >
-              {% if album.releases is defined and album.releases %}
-                <img src={{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}} class="card-img-top"  style="height:18rem;  object-fit: cover;">
-              {% endif %}
+                <img 
+                  {% if album.releases is defined and album.releases %}
+                    src={{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}} 
+                  {% else %}
+                    src={{url_for('static', filename='images/placeholder.jpg')}}
+                  {% endif %}
+                    class="card-img-top"  
+                    style="height:18rem;  object-fit: cover;"
+                >
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
                 <p class="card-text">{{ album.artist }}</p>
