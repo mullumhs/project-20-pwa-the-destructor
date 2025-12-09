@@ -31,20 +31,34 @@ def init_routes(app):
     
     @app.route('/mb', methods=['GET'])
     def get_musicb():
-        url = "https://musicbrainz.org/ws/2/recording"
-        params = {
-            "query": 'artist:"Ed Sheeran" AND recording:"Shape of You"',
+        artist = request.args.get('artist', '')
+        title = request.args.get('title', '')
+        url_rel = "https://musicbrainz.org/ws/2/release"
+        params_rel = {
+            "query": f'artist:{artist} AND release:{title}',
             "fmt": "json",
-            "inc": "releases"
         }
 
-        response = requests.get(url, params=params)
-        data = response.json()
+        response_rel = requests.get(url_rel, params=params_rel)
+        data_rel = response_rel.json()
 
         # This is the full list of recordings
-        recordings = data.get("recordings", [])
+        releases = data_rel.get("releases", [])
 
-        return render_template('musicbrainz.html', data=recordings)
+        
+        url_rec = "https://musicbrainz.org/ws/2/recording"
+        params_rec = {
+            "query": f'artist:{artist} AND recording:{title}',
+            "fmt": "json",
+        }
+
+        response_rec = requests.get(url_rec, params=params_rec)
+        data_rec = response_rec.json()
+
+        # This is the full list of recordings
+        recordings = data_rec.get("recordings", [])
+
+        return render_template('musicbrainz.html', data=releases, data2=recordings)
 
 
     @app.route('/add', methods=['GET', 'POST'])

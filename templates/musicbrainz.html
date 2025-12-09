@@ -50,7 +50,6 @@
     </nav>
 
     <h1>Albums in the collection</h1>
-
     <div class="container-fluid text-center">
     {% for album in data %}
       {% if loop.index0 % 5 == 0 %}
@@ -59,6 +58,30 @@
           <div class="col">
               <div class="card" style="width: 18rem;" >
               <img src={{"https://coverartarchive.org/release/" ~ album.id ~ "/front"}} class="card-img-top"  style="height:18rem;  object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ album.title }}</h5>
+                <p class="card-text">{{ album.artist }}</p>
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+              </div>
+            </div>
+          </div>
+      {% if loop.index0 % 5 == 4 %}
+        </div>
+      {% endif %}
+    {% endfor %}
+    </div>
+    <br>
+    <br>
+    <h1>Songs in the collection</h1>
+
+    <div class="container-fluid text-center">
+    {% for album in data2 %}
+      {% if loop.index0 % 5 == 0 %}
+          <div class="row row-cols-5">
+      {% endif %}
+          <div class="col">
+              <div class="card" style="width: 18rem;" >
+              <img src={{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}} class="card-img-top"  style="height:18rem;  object-fit: cover;">
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
                 <p class="card-text">{{ album.artist }}</p>
