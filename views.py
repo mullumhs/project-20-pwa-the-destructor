@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash
-from models import db, Songs, Album
+from models import db, Playlists, Album
 from werkzeug.utils import secure_filename
 import uuid
 import requests
