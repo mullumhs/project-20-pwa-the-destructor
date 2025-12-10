@@ -48,39 +48,28 @@
         </div>
       </div>
     </nav>
+    <h1>Search for an Album / Song</h1>
+    <form action = "{{ url_for('get_musicb') }}" method = "GET">
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="title" placeholder="title" name ="title">
+        <label for="floatingInput">Title</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="artist" placeholder="artist" name = "artist">
+        <label for="floatingInput">Artist</label>
+      </div>
 
-    <h1>{{recrel}}s in the collection</h1>
-    <div class="container-fluid text-center">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
-    {% for album in data %}
-          
-          <div class="col">
-              <div class="card" style="width: 18rem;" >
-              <img
-              {% if recrel == release %}
-                src={{"https://coverartarchive.org/release/" ~ album.id ~ "/front"}}
-              {% else %}
-                {% if album.releases is defined and album.releases %}
-                    src={{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}} 
-                  {% else %}
-                      src={{url_for('static', filename='images/placeholder.jpg')}}
-                {% endif %}
-              {% endif %}
-              class="card-img-top"  
-              style="height:18rem;  object-fit: cover;">
+      <input type="radio" class="btn-check" name="recrel" id="success-outlined" autocomplete="off" value="release" checked>
+      <label class="btn btn-outline-success" for="success-outlined">Album</label>
 
-              <div class="card-body">
-                <h5 class="card-title">{{ album.title }}</h5>
-                <p class="card-text">{{ album.artist }}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
-              </div>
-            </div>
-          </div>
-    {% endfor %}
-    </div>
-    </div>
-    <br>
-    <br>
+      <input type="radio" class="btn-check" name="recrel" id="danger-outlined" autocomplete="off" value="recording">
+      <label class="btn btn-outline-danger" for="danger-outlined">Song</label>
 
-  </body>
+      <label for="range1" class="form-label">Limit</label>
+      <input type="range" class="form-range" id="range1" name="limit">
+
+    <button class="btn btn-primary" type="submit">Submit form</button>
+
+    </form>
+</body>
 </html>

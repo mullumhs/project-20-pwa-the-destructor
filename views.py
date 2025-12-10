@@ -33,32 +33,22 @@ def init_routes(app):
     def get_musicb():
         artist = request.args.get('artist', '')
         title = request.args.get('title', '')
-        url_rel = "https://musicbrainz.org/ws/2/release"
-        params_rel = {
-            "query": f'artist:{artist} AND release:{title}',
-            "fmt": "json",
-        }
-
-        response_rel = requests.get(url_rel, params=params_rel)
-        data_rel = response_rel.json()
-
-        # This is the full list of recordings
-        releases = data_rel.get("releases", [])
-
+        recrel = request.args.get('recrel', 'release')
+        limit = request.args.get('limit', '10')
         
-        url_rec = "https://musicbrainz.org/ws/2/recording"
-        params_rec = {
-            "query": f'artist:{artist} AND recording:{title}',
+        url = f"https://musicbrainz.org/ws/2/{recrel}"
+        params = {
+            "query": f'artist:"{artist}" AND {recrel}:"{title}"',
             "fmt": "json",
+            "limit": {limit},
         }
 
-        response_rec = requests.get(url_rec, params=params_rec)
-        data_rec = response_rec.json()
+        response = requests.get(url, params=params)
+        data = response.json()
 
-        # This is the full list of recordings
-        recordings = data_rec.get("recordings", [])
+        final_data = data.get(f"{recrel}s", [])
 
-        return render_template('musicbrainz.html', data=releases, data2=recordings)
+        return render_template('musicbrainz.html', data=final_data, recrel=recrel)
 
 
     @app.route('/add', methods=['GET', 'POST'])
@@ -108,7 +98,25 @@ def init_routes(app):
 
     
 
+    @app.route('/search', methods=['GET'])
+    def search_item():
+            #if request.method == 'POST':
+                
+                #query = [
 
+                 #   title=request.form['title'],
+
+                 #   artist=request.form['artist'],
+
+                  #  limit=int(request.form['limit']),
+#
+                 #   offset=int(request.form['offset'])
+
+               # ]
+
+               # return redirect(url_for('get_items'))
+
+            return render_template('search.html')
 
     @app.route('/update', methods=['POST'])
     def update_item():
