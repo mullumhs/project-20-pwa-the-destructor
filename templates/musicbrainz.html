@@ -1,53 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Kanesite</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-  </head>
-  <body>
+{% extends 'base.html' %}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-
-
-    
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img src="{{ url_for('static', filename='images/kanesiteLOGO.png') }}" alt="Logo" width="30" height="30" class="d-inline-block align-text-top">
-          Kanesite
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{{ url_for('get_items') }}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{{ url_for('create_item') }}">Upload</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Dropdown
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#">Action</a></li>
-                <li><a class="dropdown-item" href="#">Another action</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Something else here</a></li>
-              </ul>
-            </li>
-          </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form>
-        </div>
-      </div>
-    </nav>
+{% block content %}
 
     <h1>{{recrel}}s in the collection</h1>
     <div class="container-fluid text-center">
@@ -57,18 +10,19 @@
           <div class="col">
               <div class="card" style="width: 18rem;" >
               <img
-              {% if recrel == release %}
-                src={{"https://coverartarchive.org/release/" ~ album.id ~ "/front"}}
+              {% if recrel == "release" %}
+                src="{{"https://coverartarchive.org/release/" ~ album.id ~ "/front"}}"
               {% else %}
                 {% if album.releases is defined and album.releases %}
-                    src={{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}} 
+                    src="{{"https://coverartarchive.org/release/" ~ album.releases[0].id ~ "/front"}}"
                   {% else %}
-                      src={{url_for('static', filename='images/placeholder.jpg')}}
+                      src="{{url_for('static', filename='images/placeholder.jpg')}}"
                 {% endif %}
               {% endif %}
-              class="card-img-top"  
-              style="height:18rem;  object-fit: cover;">
 
+              
+              class="card-img-top"  
+              style="height:18rem;  object-fit: cover; background-image: url({{url_for('static', filename='images/loading.gif')}}); background-size: cover;">
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
                 <p class="card-text">{{ album.artist }}</p>
@@ -79,8 +33,20 @@
     {% endfor %}
     </div>
     </div>
-    <br>
-    <br>
 
-  </body>
-</html>
+    <script>
+      const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";
+
+      document.querySelectorAll('.card-img-top').forEach(img => {
+        img.onload = () => {
+          img.style.backgroundImage = 'none';
+        };
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = placeholder;
+          img.style.backgroundImage = 'none';
+        };
+        });
+    </script>
+
+    {% endblock %}

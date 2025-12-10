@@ -21,7 +21,7 @@ def allowed_file(filename):
 
 def init_routes(app):
 
-    @app.route('/', methods=['GET'])
+    @app.route('/old', methods=['GET'])
     def get_items():
         albums = Album.query.all()
 
@@ -29,7 +29,7 @@ def init_routes(app):
 
 
     
-    @app.route('/mb', methods=['GET'])
+    @app.route('/', methods=['GET'])
     def get_musicb():
         artist = request.args.get('artist', '')
         title = request.args.get('title', '')

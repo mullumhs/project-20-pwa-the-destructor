@@ -4,7 +4,7 @@ Syntax preview (https://markdownlivepreview.com/)
 Ctrl + Shift + V
 
 
-1. Create an advanced search form
+1. Create a base.html
 
 2. Create a playlist database
 

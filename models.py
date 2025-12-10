@@ -26,3 +26,10 @@ class Album(db.Model):
     rating = db.Column(db.Float)
     genre = db.Column(db.String(100))
     image = db.Column(db.String(100), nullable=False)
+
+class Playlists(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(100), nullable=False)
+    creator = db.Column(db.String(100))
+    description = db.Column(db.String(256))
+    image = db.Column(db.String(100), nullable=False)
