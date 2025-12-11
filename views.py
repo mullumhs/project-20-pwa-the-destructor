@@ -20,14 +20,6 @@ def allowed_file(filename):
 
 
 def init_routes(app):
-
-    @app.route('/old', methods=['GET'])
-    def get_items():
-        albums = Album.query.all()
-
-        return render_template('index.html', albums=albums)
-
-
     
     @app.route('/', methods=['GET'])
     def get_musicb():
@@ -50,6 +42,104 @@ def init_routes(app):
 
         return render_template('musicbrainz.html', data=final_data, recrel=recrel)
 
+
+    @app.route('/create', methods=['GET', 'POST'])
+    def create_playlist():
+        if request.method == 'POST':
+            if 'file' not in request.files:
+                flash('No file part')
+                return redirect(request.url)
+            file = request.files['file']
+            # If the user does not select a file, the browser submits an
+            # empty file without a filename.
+            if file.filename == '':
+                flash('No selected file')
+                print("fail2")
+
+                return redirect(request.url)
+            if file and allowed_file(file.filename):
+                extension = file.filename.split(".")[-1]
+                new_filename = str(uuid.uuid4())+"."+extension
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], new_filename))
+                print("bazinga")
+
+
+            new_playlist = Playlists(
+
+                title=request.form['title'],
+
+                creator=request.form['creator'],
+
+                description=request.form['description'],
+
+                songs=[],
+
+                image=new_filename
+
+            )
+
+            db.session.add(new_playlist)
+
+            db.session.commit()
+
+            return redirect(url_for('get_playlists'))
+
+        return render_template('create.html')
+    
+
+    @app.route('/playlists', methods=['GET'])
+    def get_playlists():
+        playlists = Playlists.query.all()
+
+        return render_template('playlists.html', playlists=playlists)
+    
+    @app.route('/svp', methods=['GET'])
+    def single_view_playlists():  
+        url = f"https://musicbrainz.org/ws/2/recording"
+        params = {
+            "query": f'artist:"Kanye West" AND recording:"Runaway"',
+            "fmt": "json",
+            "limit": 25,
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        final_data = data.get(f"recordings", [])
+
+        return render_template('single_view_playlist.html', data=final_data)
+        
+    
+    
+
+    @app.route('/search', methods=['GET'])
+    def search_item():
+        return render_template('search.html')
+
+    @app.route('/update', methods=['POST'])
+    def update_item():
+        # This route should handle updating an existing item identified by the given ID.
+        return render_template('index.html', message=f'Item updated successfully')
+
+
+
+    @app.route('/delete', methods=['POST'])
+    def delete_item():
+        # This route should handle deleting an existing item identified by the given ID.
+        return render_template('index.html', message=f'Item deleted successfully')
+    
+
+
+
+
+
+
+
+
+
+
+
+    # OLD STUFF:
 
     @app.route('/add', methods=['GET', 'POST'])
     def create_item():
@@ -95,37 +185,9 @@ def init_routes(app):
             return redirect(url_for('get_items'))
 
         return render_template('add.html')
-
     
+    @app.route('/old', methods=['GET'])
+    def get_items():
+        albums = Album.query.all()
 
-    @app.route('/search', methods=['GET'])
-    def search_item():
-            #if request.method == 'POST':
-                
-                #query = [
-
-                 #   title=request.form['title'],
-
-                 #   artist=request.form['artist'],
-
-                  #  limit=int(request.form['limit']),
-#
-                 #   offset=int(request.form['offset'])
-
-               # ]
-
-               # return redirect(url_for('get_items'))
-
-            return render_template('search.html')
-
-    @app.route('/update', methods=['POST'])
-    def update_item():
-        # This route should handle updating an existing item identified by the given ID.
-        return render_template('index.html', message=f'Item updated successfully')
-
-
-
-    @app.route('/delete', methods=['POST'])
-    def delete_item():
-        # This route should handle deleting an existing item identified by the given ID.
-        return render_template('index.html', message=f'Item deleted successfully')
+        return render_template('index.html', albums=albums)

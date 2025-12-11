@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Create a new Playlist</h1>
+    <form method="post" enctype=multipart/form-data>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="title" placeholder="ABC" name ="title" required>
+        <label for="floatingInput">Title</label>
+      </div>
+      <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="creator" placeholder="The Jackson 5" name = "creator">
+        <label for="floatingInput">Creator</label>
+      </div>
+
+       <div class="form-floating mb-3">
+        <input type="text" class="form-control" id="description" placeholder="The Jackson 5" name = "description">
+        <label for="floatingInput">Description</label>
+      </div>
+
+      <div class="mb-3">
+        <label for="formFile" class="form-label">Upload Image</label>
+        <input class="form-control" type="file" id="formFile" name="file" required>
+      </div>
+
+    
+    <button class="btn btn-primary" type="submit">Submit form</button>
+
+    </form>
+    {% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container-fluid text-center">
+        <div class="row">
+            <div class="col-auto">
+                <img src="{{url_for('static', filename='images/placeholder.jpg')}}" style="width: 25vw; min-width: 25rem; object-fit: cover;" alt="...">
+
+                <div class="container-fluid border border-primary">
+                    <h1>Title</h1>
+                    <p>Desc</p>
+                </div>
+
+            </div>
+             <div class="col-8">
+                <h1>Songs</h1>
+                <div class="container-fluid border border-primary">
+                    <div class="row row-cols-1">
+                    {% for song in data %}
+                        
+                        <div class="card mb-3" style="height: 18rem; min-width: 25rem">
+                            <div class="row">
+                                <div class="col-md-4">
+                                <img 
+                                {% if song.releases is defined and song.releases %}
+                                    src="{{"https://coverartarchive.org/release/" ~ song.releases[0].id ~ "/front"}}"
+                                {% else %}
+                                    src="{{url_for('static', filename='images/placeholder.jpg')}}"
+                                {% endif %}
+                                
+                                class="img-fluid" style="height: 15vw; max-height: 18rem; max-width: 18rem;" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{song.title}}</h5>
+                                    <p class="card-text">{{song.artist}}</p>
+                                    {% if song.releases is defined and song.releases %}
+                                        <p class="card-text">{{song.releases[0].title}}</p>
+                                    {% endif %}
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            
+     <script>
+      const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";
+
+      document.querySelectorAll('.img-fluid').forEach(img => {
+        img.onload = () => {
+          img.style.backgroundImage = 'none';
+        };
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = placeholder;
+          img.style.backgroundImage = 'none';
+        };
+        });
+    </script>
+
+    {% endblock %}

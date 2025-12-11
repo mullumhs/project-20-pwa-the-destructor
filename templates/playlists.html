@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Select a Playlist</h1>
+    <div class="container-fluid text-center">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
+    {% for playlists in playlists %}
+          
+          <div class="col">
+              <div class="card" style="width: 18rem;" >
+                <img src="{{ url_for('static', filename='uploads/' ~ playlists.image) }}" alt="Playlist Image" class="card-img-top"  style="height:18rem;  object-fit: cover;">
+              <div class="card-body">
+                <h5 class="card-title">{{ playlists.title }}</h5>
+                <p class="card-text" style ="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">by {{ playlists.creator }}<br><br>{{ playlists.description }}</p>
+
+                <a href="#" class="btn btn-primary">View</a>
+                <a href="#" class="btn btn-primary">Edit</a>
+              </div>
+            </div>
+          </div>
+    {% endfor %}
+    </div>
+    </div>
+    {% endblock %}
