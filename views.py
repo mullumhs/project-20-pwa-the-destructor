@@ -18,6 +18,22 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def fetch_music_data(mbid_list):
+    all_data = []
+
+    for mbid in mbid_list:
+        url = f"https://musicbrainz.org/ws/2/recording/{mbid}"
+        params = {
+            "fmt": "json",
+            "inc": "artist-credits+releases"
+        }
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            all_data.append(data)  
+
+    return all_data
+
 
 def init_routes(app):
     
@@ -95,19 +111,12 @@ def init_routes(app):
     
     @app.route('/svp', methods=['GET'])
     def single_view_playlists():  
-        url = f"https://musicbrainz.org/ws/2/recording"
-        params = {
-            "query": f'artist:"Kanye West" AND recording:"Runaway"',
-            "fmt": "json",
-            "limit": 25,
-        }
+        id = request.args.get('pid', 1)
+        playlist = db.session.query(Playlists).get(id)
+        mbids = playlist.songs
 
-        response = requests.get(url, params=params)
-        data = response.json()
-
-        final_data = data.get(f"recordings", [])
-
-        return render_template('single_view_playlist.html', data=final_data)
+        final_data = fetch_music_data(mbids)
+        return render_template('single_view_playlist.html', playlist=playlist, data=final_data)
         
     
     

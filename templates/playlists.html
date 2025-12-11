@@ -14,7 +14,7 @@
                 <h5 class="card-title">{{ playlists.title }}</h5>
                 <p class="card-text" style ="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">by {{ playlists.creator }}<br><br>{{ playlists.description }}</p>
 
-                <a href="#" class="btn btn-primary">View</a>
+                <a href="{{ url_for('single_view_playlists') }}" class="btn btn-primary">View</a>
                 <a href="#" class="btn btn-primary">Edit</a>
               </div>
             </div>
