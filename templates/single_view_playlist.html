@@ -14,30 +14,43 @@
             height: 5rem;
             }
         }
+
+        .responsive-cover {
+            width: 25vw;
+            min-width: 25rem;
+            object-fit: cover;
+        }
+
+        @media (max-width: 424px) {
+            .responsive-cover {
+            width: 100%;
+            min-width: auto;
+            }
+        }
     </style>
 
 
 
-    <div class="container-fluid text-center">
+    <div class="container-fluid text-center" style="padding-top:2rem;">
         <div class="row">
-            <div class="col-auto" style="min-width: 25rem; ">
-                <img src="{{url_for('static', filename='images/placeholder.jpg')}}" style="width: 25vw; min-width: 25rem; object-fit: cover;" alt="...">
+            <div class="col-auto">
+                <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">
 
-                <div class="container-fluid" style="min-width: 25rem;">
+                <div class="container-fluid" >
                     <br>
-                    <h1>Title</h1>
-                    <p>Desc</p>
+                    <h1>{{playlist.title}}</h1>
+                    <p>{{playlist.creator}}<br>{{playlist.description}}</p>
                 </div>
 
             </div>
-             <div class="col-8" style="min-width: 25rem; ">
+             <div class="col">
                 <br>
                 <h1>Songs</h1>
-                <div class="container-fluid" style="min-width: 25rem; ">
+                <div class="container-fluid" >
                     <div class="row row-cols-1">
                     {% for song in data %}
                         
-                        <div class="card mb-3" style="height: 18rem; min-width: 25rem">
+                        <div class="card mb-3" style="height: 18rem;">
                             <div class="row">
                                 <div class="col-md-4" style="padding: 0px">
                                 <img 
@@ -47,7 +60,7 @@
                                     src="{{url_for('static', filename='images/placeholder.jpg')}}"
                                 {% endif %}
                                 
-                                class="responsive-img" alt="...">
+                                class="responsive-img rounded-start" alt="...">
                                 </div>
                                 <div class="col-md-8">
                                 <div class="card-body">

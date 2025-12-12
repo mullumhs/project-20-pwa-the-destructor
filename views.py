@@ -115,7 +115,19 @@ def init_routes(app):
         playlist = db.session.query(Playlists).get(id)
         mbids = playlist.songs
 
-        final_data = fetch_music_data(mbids)
+        url = f"https://musicbrainz.org/ws/2/recording"
+        params = {
+            "query": f'artist:"Ed Sheeran" AND recording:"Shape Of You"',
+            "fmt": "json",
+            "limit": 10,
+        }
+
+        response = requests.get(url, params=params)
+        data = response.json()
+
+        final_data = data.get(f"recordings", [])
+
+        #final_data = fetch_music_data(mbids)
         return render_template('single_view_playlist.html', playlist=playlist, data=final_data)
         
     
