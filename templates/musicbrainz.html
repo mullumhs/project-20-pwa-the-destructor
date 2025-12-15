@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
+  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
+  Toggle static offcanvas
+  </button>
+
+  <div class="offcanvas offcanvas-start" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="staticBackdropLabel">Offcanvas</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body" id="playlist-container">
+      <div>
+        I will not close if you click outside of me.
+      </div>
+    </div>
+  </div>
+
+
+
 
     <h1>{{recrel}}s in the collection</h1>
     <div class="container-fluid text-center">
@@ -26,13 +44,25 @@
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
                 <p class="card-text">{{ album.artist }}</p>
-                <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a href="#" class="btn btn-primary add-btn" data-mbid="{{ album.id }}">Add</a>
               </div>
             </div>
           </div>
     {% endfor %}
     </div>
     </div>
+
+    <script>
+    function loadPlaylist() {
+      const playlistId = localStorage.getItem("playlist_id");
+      fetch(`/svp_data?pid=${playlistId}`)
+        .then(res => res.text())
+        .then(html => {
+          document.getElementById("playlist-container").innerHTML = html;
+        })
+        .catch(err => console.error(err));
+    }
+    </script>
 
     <script>
       const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";
@@ -47,6 +77,36 @@
           img.style.backgroundImage = 'none';
         };
         });
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const playlistId = localStorage.getItem("playlist_id"); // load stored playlist id
+
+        document.querySelectorAll(".add-btn").forEach(button => {
+          button.addEventListener("click", function(event) {
+            event.preventDefault();
+            const mbid = this.getAttribute("data-mbid");
+
+            if (!playlistId) {
+              alert("No playlist selected!");
+              return;
+            }
+
+            fetch(`/api/playlists/${playlistId}/add_song`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ mbid: mbid })
+            })
+            .then(res => res.json())
+            .then(data => {
+              console.log(data);
+              alert("Song added to playlist!");
+            })
+            .catch(err => console.error(err));
+          });
+        });
+      });
     </script>
 
     {% endblock %}

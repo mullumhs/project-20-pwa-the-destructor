@@ -15,11 +15,28 @@
                 <p class="card-text" style ="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">by {{ playlists.creator }}<br><br>{{ playlists.description }}</p>
 
                 <a href="{{ url_for('single_view_playlists') }}" class="btn btn-primary">View</a>
-                <a href="#" class="btn btn-primary">Edit</a>
+                <a href="#" class="btn btn-primary edit-btn" data-id="{{ playlists.id }}">Edit</a>
               </div>
             </div>
           </div>
     {% endfor %}
     </div>
     </div>
+
+    <script>
+      // Attach click handler to all edit buttons
+      document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".edit-btn").forEach(function(button) {
+          button.addEventListener("click", function(event) {
+            event.preventDefault(); // prevent default link behavior
+            const playlistId = this.getAttribute("data-id");
+            localStorage.setItem("playlist_id", playlistId);
+            alert("Playlist ID " + playlistId + " saved to localStorage!");
+            // Optionally redirect somewhere:
+            window.location.href = "/search"
+            
+          });
+        });
+      });
+    </script>
     {% endblock %}

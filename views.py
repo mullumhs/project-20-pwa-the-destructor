@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash, jsonify
 from models import db, Playlists, Album
 from werkzeug.utils import secure_filename
 import uuid
@@ -58,6 +58,26 @@ def init_routes(app):
 
         return render_template('musicbrainz.html', data=final_data, recrel=recrel)
 
+    @app.route('/api/playlists/<int:playlist_id>/add_song', methods=['POST'])
+    def add_song_to_playlist(playlist_id):
+        playlist = Playlists.query.get_or_404(playlist_id)
+        mbid = request.json.get('mbid')
+
+        # Ensure songs is a list
+        if not playlist.songs:
+            playlist.songs = []
+
+        # Prevent duplicates
+        if mbid not in playlist.songs:
+            playlist.songs.append(mbid)
+
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "playlist_id": playlist_id,
+            "songs": playlist.songs
+        })
 
     @app.route('/create', methods=['GET', 'POST'])
     def create_playlist():
@@ -115,23 +135,20 @@ def init_routes(app):
         playlist = db.session.query(Playlists).get(id)
         mbids = playlist.songs
 
-        url = f"https://musicbrainz.org/ws/2/recording"
-        params = {
-            "query": f'artist:"Ed Sheeran" AND recording:"Shape Of You"',
-            "fmt": "json",
-            "limit": 10,
-        }
+        final_data = fetch_music_data(mbids)
 
-        response = requests.get(url, params=params)
-        data = response.json()
-
-        final_data = data.get(f"recordings", [])
-
-        #final_data = fetch_music_data(mbids)
         return render_template('single_view_playlist.html', playlist=playlist, data=final_data)
         
-    
-    
+    @app.route('/svp_data', methods=['GET'])
+    def single_view_playlists_data():
+        pid = request.args.get('pid', 1)
+        playlist = db.session.query(Playlists).get(pid)
+        mbids = playlist.songs
+        final_data = fetch_music_data(mbids)
+
+        # Render only the playlist section (no base.html)
+        return render_template('svp_partial.html', playlist=playlist, data=final_data)
+        
 
     @app.route('/search', methods=['GET'])
     def search_item():
