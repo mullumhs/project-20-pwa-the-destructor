@@ -1,22 +1,122 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#staticBackdrop" aria-controls="staticBackdrop">
-  Toggle static offcanvas
-  </button>
+    <script>
+      (function() {
+        const playlistId = localStorage.getItem("playlist_id");
+        if (!playlistId) return;
 
-  <div class="offcanvas offcanvas-start" data-bs-backdrop="static" tabindex="-1" id="staticBackdrop" aria-labelledby="staticBackdropLabel">
-    <div class="offcanvas-header">
-      <h5 class="offcanvas-title" id="staticBackdropLabel">Offcanvas</h5>
-      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+
+        // Update or add pid without touching other params
+        params.set("pid", playlistId);
+
+        // Replace the current URL without reloading
+        history.replaceState(null, "", url.toString());
+      })();
+    </script>
+
+    <style>
+      /* Make the collapsed panel fixed to the right */
+      .right-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100vh;         /* full height */
+        width: 25rem;          /* your requested width */
+        max-width: 100%;       /* prevent overflow on small screens */
+        overflow-y: auto;      /* scroll if content is long */
+        background-color: #fff;
+        border-left: 1px solid #ddd;
+        z-index: 1050;         /* above normal content */
+      }
+        .responsive-img {
+            width: 100%;
+            max-width: 18rem;
+            height: 18rem;
+            object-fit: cover;
+        }
+
+        @media (max-width: 768px) {
+            .responsive-img {
+            height: 5rem;
+            }
+        }
+
+        .responsive-cover {
+            width: 25vw;
+            min-width: 25rem;
+            object-fit: cover;
+        }
+
+        @media (max-width: 424px) {
+            .responsive-cover {
+            width: 100%;
+            min-width: auto;
+            }
+        }
+    </style>
+
+    <!-- Collapse trigger -->
+    <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#rightPanel" aria-expanded="false" aria-controls="rightPanel">
+      Toggle Right Panel
+    </button>
+
+    <!-- Collapsible container -->
+    <div class="collapse collapse-horizontal" id="rightPanel">
+      <div class="card card-body right-panel">
+           <div class="container-fluid text-center" style="padding-top:2rem;">
+        <div class="row">
+            <div class="col-auto">
+                <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">
+
+                <div class="container-fluid" >
+                    <br>
+                    <h1>{{playlist.title}}</h1>
+                    <p>{{playlist.creator}}<br>{{playlist.description}}</p>
+                </div>
+
+            </div>
+             <div class="col">
+                <br>
+                <h1>Songs</h1>
+                <div class="container-fluid" >
+                    <div class="row row-cols-1">
+                    {% for song in pdata %}
+                        
+                        <div class="card mb-3" style="height: 18rem;">
+                            <div class="row">
+                                <div class="col-md-4" style="padding: 0px">
+                                <img 
+                                {% if song.releases is defined and song.releases %}
+                                    src="{{"https://coverartarchive.org/release/" ~ song.releases[0].id ~ "/front"}}"
+                                {% else %}
+                                    src="{{url_for('static', filename='images/placeholder.jpg')}}"
+                                {% endif %}
+                                
+                                class="responsive-img rounded-start" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{song.title}}</h5>
+                                    <p class="card-text">{{song.artist}}</p>
+                                    {% if song.releases is defined and song.releases %}
+                                        <p class="card-text">{{song.releases[0].title}}</p>
+                                    {% endif %}
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="offcanvas-body" id="playlist-container">
-      <div>
-        I will not close if you click outside of me.
       </div>
     </div>
-  </div>
-
 
 
 
@@ -66,8 +166,18 @@
 
     <script>
       const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";
-
       document.querySelectorAll('.card-img-top').forEach(img => {
+        img.onload = () => {
+          img.style.backgroundImage = 'none';
+        };
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = placeholder;
+          img.style.backgroundImage = 'none';
+        };
+        });
+
+      document.querySelectorAll('.responsive-img').forEach(img => {
         img.onload = () => {
           img.style.backgroundImage = 'none';
         };

@@ -56,11 +56,16 @@ def init_routes(app):
 
         final_data = data.get(f"{recrel}s", [])
 
-        return render_template('musicbrainz.html', data=final_data, recrel=recrel)
+        pid = request.args.get('pid', 1)
+        playlist = db.session.query(Playlists).get(pid)
+        mbids = playlist.songs
+        playlist_data = fetch_music_data(mbids)
+
+        return render_template('musicbrainz.html', data=final_data, recrel=recrel, playlist=playlist, pdata=playlist_data)
 
     @app.route('/api/playlists/<int:playlist_id>/add_song', methods=['POST'])
     def add_song_to_playlist(playlist_id):
-        playlist = Playlists.query.get_or_404(playlist_id)
+        playlist = db.session.query(Playlists).get(playlist_id)
         mbid = request.json.get('mbid')
 
         # Ensure songs is a list
