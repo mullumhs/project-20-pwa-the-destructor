@@ -18,11 +18,11 @@ def allowed_file(filename):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def fetch_music_data(mbid_list):
+def fetch_music_data(mbid_list, type):
     all_data = []
 
     for mbid in mbid_list:
-        url = f"https://musicbrainz.org/ws/2/recording/{mbid}"
+        url = f"https://musicbrainz.org/ws/2/{type}/{mbid}"
         params = {
             "fmt": "json",
             "inc": "artist-credits+releases"
@@ -58,10 +58,50 @@ def init_routes(app):
 
         pid = request.args.get('pid', 1)
         playlist = db.session.query(Playlists).get(pid)
-        mbids = playlist.songs
-        playlist_data = fetch_music_data(mbids)
+        if playlist:
+            mbids = playlist.songs
+            playlist_data = fetch_music_data(mbids, "recording")
+        else:
+            playlist_data = []
 
         return render_template('musicbrainz.html', data=final_data, recrel=recrel, playlist=playlist, pdata=playlist_data)
+    
+    @app.route("/playlist_panel")
+    def playlist_panel():
+        pid = request.args.get("pid", 1)
+        playlist = db.session.query(Playlists).get(pid)
+        if playlist:
+            mbids = playlist.songs  
+            pdata = fetch_music_data(mbids, "recording")
+        else:
+            pdata = []
+
+
+        return render_template("playlist_panel.html", playlist=playlist, pdata=pdata)
+
+    @app.route("/view_album")
+    def view_album():
+        id = request.args.get("aid", 1)
+        url = f"https://musicbrainz.org/ws/2/release/{id}" 
+        params = {"fmt": "json", "inc": "artist-credits+recordings"} 
+        a_response = requests.get(url, params=params) 
+        album = a_response.json()
+
+
+        tracks = [] 
+        for medium in album.get("media", []): 
+            for track in medium.get("tracks", []): 
+                tracks.append(track)
+
+        return render_template("view_album.html", album=album, sdata=tracks)
+    
+    @app.route("/view_song")
+    def view_song():
+        id = request.args.get("sid", 1)
+        data = fetch_music_data([id], "recording")
+
+        return render_template("view_song.html", data=data)
+
 
     @app.route('/api/playlists/<int:playlist_id>/add_song', methods=['POST'])
     def add_song_to_playlist(playlist_id):
@@ -83,6 +123,22 @@ def init_routes(app):
             "playlist_id": playlist_id,
             "songs": playlist.songs
         })
+    
+    @app.route("/api/playlists/<int:playlist_id>/remove_song", methods=["POST"])
+    def remove_song(playlist_id):
+        playlist = db.session.query(Playlists).get(playlist_id)
+        if not playlist:
+            return {"error": "Playlist not found"}, 404
+
+        mbid = request.json.get("mbid")
+        if not mbid:
+            return {"error": "No MBID provided"}, 400
+
+        if mbid in playlist.songs: playlist.songs.remove(mbid) 
+        
+        db.session.commit()
+        return {"success": True, "removed": mbid}
+
 
     @app.route('/create', methods=['GET', 'POST'])
     def create_playlist():
@@ -140,19 +196,9 @@ def init_routes(app):
         playlist = db.session.query(Playlists).get(id)
         mbids = playlist.songs
 
-        final_data = fetch_music_data(mbids)
+        final_data = fetch_music_data(mbids, "recording")
 
         return render_template('single_view_playlist.html', playlist=playlist, data=final_data)
-        
-    @app.route('/svp_data', methods=['GET'])
-    def single_view_playlists_data():
-        pid = request.args.get('pid', 1)
-        playlist = db.session.query(Playlists).get(pid)
-        mbids = playlist.songs
-        final_data = fetch_music_data(mbids)
-
-        # Render only the playlist section (no base.html)
-        return render_template('svp_partial.html', playlist=playlist, data=final_data)
         
 
     @app.route('/search', methods=['GET'])

@@ -8,7 +8,7 @@
     {% for playlists in playlists %}
           
           <div class="col">
-              <div class="card" style="width: 18rem;" >
+              <div class="card bg-black text-light" style="width: 18rem;" >
                 <img src="{{ url_for('static', filename='uploads/' ~ playlists.image) }}" alt="Playlist Image" class="card-img-top"  style="height:18rem;  object-fit: cover;">
               <div class="card-body">
                 <h5 class="card-title">{{ playlists.title }}</h5>

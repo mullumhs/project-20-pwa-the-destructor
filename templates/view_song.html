@@ -34,7 +34,7 @@
 
 
 
-    <div class="container-fluid text-center" style="padding-top:2rem;" data-pid="{{ playlist.id }}" id="playlist-page">
+    <div class="container-fluid text-center" style="padding-top:2rem;">
         <div class="row">
             <div class="col-auto" style="min-width: 174px;">
                 <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">
@@ -68,15 +68,11 @@
                                 <div class="col-md-8">
                                 <div class="card-body">
                                     <h5 class="card-title">{{song.title}}</h5>
-                                    {% if song["artist-credit"] is defined and song["artist-credit"]%}
-                                        <p class="card-text">{{ song["artist-credit"][0].name }}</p>
-                                    {% endif %}
+                                    <p class="card-text">{{ song["artist-credit"][0].name }}p>
                                     {% if song.releases is defined and song.releases %}
                                         <p class="card-text">{{song.releases[0].title}}</p>
                                     {% endif %}
-                                    <a href="#" class="btn btn-primary rmv-btn" data-mbid="{{ song.id }}">Remove</a>
-
-                                    <p class="card-text"><small class="text-body-secondary">Kanesite</small></p>
+                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
                                 </div>
                                 </div>
                             </div>
@@ -87,37 +83,6 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-        const page = document.getElementById("playlist-page");
-        const playlistId = page.getAttribute("data-pid");
-
-        document.querySelectorAll(".rmv-btn").forEach(button => {
-            button.addEventListener("click", function(event) {
-            event.preventDefault();
-            const mbid = this.getAttribute("data-mbid");
-
-            fetch(`/api/playlists/${playlistId}/remove_song`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ mbid: mbid })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data);
-                // Option A: reload the whole page
-                location.reload();
-                // Option B: re-fetch just the playlist HTML and replace #playlist-page
-                // refreshPlaylistPage(playlistId);
-            })
-            .catch(err => console.error(err));
-            });
-        });
-        });
-
-    </script>
-
             
      <script>
       const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";

@@ -31,94 +31,29 @@
         border-left: 1px solid #ddd;
         z-index: 1050;         /* above normal content */
       }
-        .responsive-img {
-            width: 100%;
-            max-width: 18rem;
-            height: 18rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 768px) {
-            .responsive-img {
-            height: 5rem;
-            }
-        }
-
-        .responsive-cover {
-            width: 25vw;
-            min-width: 25rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 424px) {
-            .responsive-cover {
-            width: 100%;
-            min-width: auto;
-            }
-        }
     </style>
 
+
+    {% if playlist %}
     <!-- Collapse trigger -->
     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#rightPanel" aria-expanded="false" aria-controls="rightPanel">
-      Toggle Right Panel
+      Show Playlist
     </button>
 
     <!-- Collapsible container -->
     <div class="collapse collapse-horizontal" id="rightPanel">
       <div class="card card-body right-panel">
-           <div class="container-fluid text-center" style="padding-top:2rem;">
-        <div class="row">
-            <div class="col-auto">
-                <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">
+        <div class="container-fluid text-center" style="padding-top:2rem;" id="playlist-panel">
+          <!-- Content using the html template thing goes here -->
 
-                <div class="container-fluid" >
-                    <br>
-                    <h1>{{playlist.title}}</h1>
-                    <p>{{playlist.creator}}<br>{{playlist.description}}</p>
-                </div>
+          {% include "playlist_panel.html" %}
 
-            </div>
-             <div class="col">
-                <br>
-                <h1>Songs</h1>
-                <div class="container-fluid" >
-                    <div class="row row-cols-1">
-                    {% for song in pdata %}
-                        
-                        <div class="card mb-3" style="height: 18rem;">
-                            <div class="row">
-                                <div class="col-md-4" style="padding: 0px">
-                                <img 
-                                {% if song.releases is defined and song.releases %}
-                                    src="{{"https://coverartarchive.org/release/" ~ song.releases[0].id ~ "/front"}}"
-                                {% else %}
-                                    src="{{url_for('static', filename='images/placeholder.jpg')}}"
-                                {% endif %}
-                                
-                                class="responsive-img rounded-start" alt="...">
-                                </div>
-                                <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{song.title}}</h5>
-                                    <p class="card-text">{{song.artist}}</p>
-                                    {% if song.releases is defined and song.releases %}
-                                        <p class="card-text">{{song.releases[0].title}}</p>
-                                    {% endif %}
-                                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                                </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    </div>
-                </div>
-            </div>
+
         </div>
-    </div>
       </div>
     </div>
 
-
+    {% endif %}
 
     <h1>{{recrel}}s in the collection</h1>
     <div class="container-fluid text-center">
@@ -126,7 +61,7 @@
     {% for album in data %}
           
           <div class="col">
-              <div class="card" style="width: 18rem;" >
+              <div class="card bg-black text-light" style="width: 18rem;" >
               <img
               {% if recrel == "release" %}
                 src="{{"https://coverartarchive.org/release/" ~ album.id ~ "/front"}}"
@@ -143,7 +78,16 @@
               style="height:18rem;  object-fit: cover; background-image: url({{url_for('static', filename='images/loading.gif')}}); background-size: cover;">
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
-                <p class="card-text">{{ album.artist }}</p>
+                {% if album["artist-credit"] is defined and album["artist-credit"]%}
+                    <p class="card-text">{{ song["artist-credit"][0].name }}</p>
+                {% endif %}
+                
+                {% if recrel == "release" %}
+                  <a href="{{ url_for('view_album', aid=album.id) }}" class="btn btn-primary">View</a>
+                {% else %} 
+                  <a href="{{ url_for('view_song', sid=album.id) }}" class="btn btn-primary">View</a>
+                {% endif %}
+
                 <a href="#" class="btn btn-primary add-btn" data-mbid="{{ album.id }}">Add</a>
               </div>
             </div>
@@ -191,7 +135,7 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-        const playlistId = localStorage.getItem("playlist_id"); // load stored playlist id
+        const playlistId = localStorage.getItem("playlist_id");
 
         document.querySelectorAll(".add-btn").forEach(button => {
           button.addEventListener("click", function(event) {
@@ -211,12 +155,46 @@
             .then(res => res.json())
             .then(data => {
               console.log(data);
-              alert("Song added to playlist!");
+              // Refresh with retry
+              refreshPlaylistPanel(playlistId, 5, 2000); // 5 retries, 2s delay
             })
             .catch(err => console.error(err));
           });
         });
       });
     </script>
+
+    <script>
+      function refreshPlaylistPanel(playlistId, retries = 3, delay = 1000) {
+        fetch(`/playlist_panel?pid=${playlistId}`)
+          .then(res => {
+            if (!res.ok) throw new Error("Network response was not ok");
+            return res.text();
+          })
+          .then(html => {
+            // Make sure you have <div id="playlist-panel"> in your template
+            document.getElementById("playlist-panel").innerHTML = html;
+          })
+          .catch(err => {
+            console.error("Refresh failed:", err);
+            if (retries > 0) {
+              setTimeout(() => refreshPlaylistPanel(playlistId, retries - 1, delay), delay);
+            } else {
+              alert("Could not refresh playlist panel after multiple attempts.");
+            }
+          });
+      }
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const playlistId = localStorage.getItem("playlist_id");
+        if (playlistId) {
+          refreshPlaylistPanel(playlistId);  // run once immediately
+        }
+      });
+    </script>
+
+
 
     {% endblock %}

@@ -14,5 +14,9 @@ Ctrl + Shift + V
 
 5. Make it so you can edit playlists
 
+6. Make it so you can view albums... DONEEE
+
+7. Make it so you can view songs
+
 
 
