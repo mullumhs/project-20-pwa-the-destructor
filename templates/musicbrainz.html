@@ -41,9 +41,9 @@
     </button>
 
     <!-- Collapsible container -->
-    <div class="collapse collapse-horizontal" id="rightPanel">
-      <div class="card card-body right-panel">
-        <div class="container-fluid text-center" style="padding-top:2rem;" id="playlist-panel">
+    <div class="collapse collapse-horizontal bg-dark" id="rightPanel">
+      <div class="card card-body right-panel bg-dark">
+        <div class="container-fluid text-center bg-dark" style="padding-top:2rem;" id="playlist-panel">
           <!-- Content using the html template thing goes here -->
 
           {% include "playlist_panel.html" %}
@@ -79,7 +79,7 @@
               <div class="card-body">
                 <h5 class="card-title">{{ album.title }}</h5>
                 {% if album["artist-credit"] is defined and album["artist-credit"]%}
-                    <p class="card-text">{{ song["artist-credit"][0].name }}</p>
+                    <p class="card-text">{{ album["artist-credit"][0].name }}</p>
                 {% endif %}
                 
                 {% if recrel == "release" %}
@@ -111,17 +111,6 @@
     <script>
       const placeholder = "{{ url_for('static', filename='images/placeholder.jpg') }}";
       document.querySelectorAll('.card-img-top').forEach(img => {
-        img.onload = () => {
-          img.style.backgroundImage = 'none';
-        };
-        img.onerror = () => {
-          img.onerror = null;
-          img.src = placeholder;
-          img.style.backgroundImage = 'none';
-        };
-        });
-
-      document.querySelectorAll('.responsive-img').forEach(img => {
         img.onload = () => {
           img.style.backgroundImage = 'none';
         };
@@ -172,8 +161,19 @@
             return res.text();
           })
           .then(html => {
-            // Make sure you have <div id="playlist-panel"> in your template
-            document.getElementById("playlist-panel").innerHTML = html;
+            const panel = document.getElementById("playlist-panel");
+            panel.innerHTML = html;
+
+            // Re‑attach placeholder logic to new images
+            const placeholder2 = "{{ url_for('static', filename='images/placeholder.jpg') }}";
+            panel.querySelectorAll('.responsive-img').forEach(img => {
+              img.onload = () => { img.style.backgroundImage = 'none'; };
+              img.onerror = () => {
+                img.onerror = null;
+                img.src = placeholder2;
+                img.style.backgroundImage = 'none';
+              };
+            });
           })
           .catch(err => {
             console.error("Refresh failed:", err);
@@ -184,6 +184,7 @@
             }
           });
       }
+
     </script>
 
     <script>

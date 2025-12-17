@@ -29,7 +29,7 @@
         }
     </style>
 
-<div class="row">
+<div class="row bg-dark">
     <div class="col-auto" style="min-width: 174px;">
         <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">
 
@@ -62,13 +62,12 @@
                         <div class="col-md-8">
                         <div class="card-body">
                             <h5 class="card-title">{{song.title}}</h5>
-                            {% if album["artist-credit"] is defined and album["artist-credit"]%}
+                            {% if song["artist-credit"] is defined and song["artist-credit"]%}
                                 <p class="card-text">{{ song["artist-credit"][0].name }}</p>
                             {% endif %}
                             {% if song.releases is defined and song.releases %}
                                 <p class="card-text">{{song.releases[0].title}}</p>
                             {% endif %}
-                            <p class="card-text"><small class="text-body-secondary">Kanesite</small></p>
                         </div>
                         </div>
                     </div>
@@ -78,3 +77,18 @@
         </div>
     </div>
 </div>
+
+
+    <script>
+      const placeholder2 = "{{ url_for('static', filename='images/placeholder.jpg') }}";
+      document.querySelectorAll('.responsive-img').forEach(img => {
+        img.onload = () => {
+          img.style.backgroundImage = 'none';
+        };
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = placeholder2;
+          img.style.backgroundImage = 'none';
+        };
+        });
+    </script>
