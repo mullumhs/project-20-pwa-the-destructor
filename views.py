@@ -39,6 +39,10 @@ def init_routes(app):
     
     @app.route('/', methods=['GET'])
     def get_musicb():
+        args = request.args
+        query = True
+        if set(args.keys()) == {"pid"}:
+            query = False
         artist = request.args.get('artist', '')
         title = request.args.get('title', '')
         recrel = request.args.get('recrel', 'release')
@@ -64,7 +68,7 @@ def init_routes(app):
         else:
             playlist_data = []
 
-        return render_template('musicbrainz.html', data=final_data, recrel=recrel, playlist=playlist, pdata=playlist_data)
+        return render_template('musicbrainz.html', query=query, data=final_data, recrel=recrel, playlist=playlist, pdata=playlist_data)
     
     @app.route("/playlist_panel")
     def playlist_panel():
