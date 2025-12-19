@@ -30,6 +30,13 @@ footer {
     width: 100%;
 }
 
+@media (max-width: 576px) {
+  footer p, footer .nav-link {
+    font-size: 2vw;
+  }
+}
+
+
 body {
   min-height: 100vh;
   position: relative;
