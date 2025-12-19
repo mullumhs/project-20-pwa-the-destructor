@@ -1,34 +1,3 @@
-    <style>
-        .responsive-img {
-            width: 100%;
-            max-width: 18rem;
-            height: 18rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 768px) {
-            .responsive-img {
-            height: 5rem;
-            }
-        }
-
-        .responsive-cover {
-            width: 25vw;
-            aspect-ratio: 1 / 1;
-            min-width: 25rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 424px) {
-            .responsive-cover {
-            min-height: auto;
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            min-width: auto;
-            }
-        }
-    </style>
-
 <div class="row bg-dark">
     <div class="col-auto" style="min-width: 174px;">
         <img src="{{ url_for('static', filename='uploads/' ~ playlist.image) }}" class="responsive-cover rounded-start rounded-end" alt="...">

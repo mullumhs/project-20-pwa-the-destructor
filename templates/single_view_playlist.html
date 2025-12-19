@@ -1,39 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <style>
-        .responsive-img {
-            width: 100%;
-            max-width: 18rem;
-            height: 18rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 768px) {
-            .responsive-img {
-            height: 5rem;
-            }
-        }
-
-        .responsive-cover {
-            width: 25vw;
-            aspect-ratio: 1 / 1;
-            min-width: 25rem;
-            object-fit: cover;
-        }
-
-        @media (max-width: 424px) {
-            .responsive-cover {
-            min-height: auto;
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            min-width: auto;
-            }
-        }
-    </style>
-
-
-
     <div class="container-fluid text-center" style="padding-top:2rem;" data-pid="{{ playlist.id }}" id="playlist-page">
         <div class="row">
             <div class="col-auto" style="min-width: 174px;">

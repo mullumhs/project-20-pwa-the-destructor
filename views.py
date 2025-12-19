@@ -41,33 +41,38 @@ def init_routes(app):
     def get_musicb():
         args = request.args
         query = True
-        if set(args.keys()) == {"pid"}:
+        if set(args.keys()) == {"pid"} or not args:
             query = False
-        artist = request.args.get('artist', '')
-        title = request.args.get('title', '')
-        recrel = request.args.get('recrel', 'release')
-        limit = request.args.get('limit', '10')
-        
-        url = f"https://musicbrainz.org/ws/2/{recrel}"
-        params = {
-            "query": f'artist:"{artist}" AND {recrel}:"{title}"',
-            "fmt": "json",
-            "limit": {limit},
-        }
-
-        response = requests.get(url, params=params)
-        data = response.json()
-
-        final_data = data.get(f"{recrel}s", [])
-
-        pid = request.args.get('pid', 1)
-        playlist = db.session.query(Playlists).get(pid)
-        if playlist:
-            mbids = playlist.songs
-            playlist_data = fetch_music_data(mbids, "recording")
+            final_data= None
+            recrel= None
+            playlist= None
+            playlist_data = None
         else:
-            playlist_data = []
+            artist = request.args.get('artist', '')
+            title = request.args.get('title', '')
+            recrel = request.args.get('recrel', 'release')
+            limit = request.args.get('limit', '10')
+            
+            url = f"https://musicbrainz.org/ws/2/{recrel}"
+            params = {
+                "query": f'artist:"{artist}" AND {recrel}:"{title}"',
+                "fmt": "json",
+                "limit": {limit},
+            }
 
+            response = requests.get(url, params=params)
+            data = response.json()
+
+            final_data = data.get(f"{recrel}s", [])
+
+            pid = request.args.get('pid', 1)
+            playlist = db.session.query(Playlists).get(pid)
+            if playlist:
+                mbids = playlist.songs
+                playlist_data = fetch_music_data(mbids, "recording")
+            else:
+                playlist_data = []
+       
         return render_template('musicbrainz.html', query=query, data=final_data, recrel=recrel, playlist=playlist, pdata=playlist_data)
     
     @app.route("/playlist_panel")
@@ -98,13 +103,6 @@ def init_routes(app):
                 tracks.append(track)
 
         return render_template("view_album.html", album=album, sdata=tracks)
-    
-    @app.route("/view_song")
-    def view_song():
-        id = request.args.get("sid", 1)
-        data = fetch_music_data([id], "recording")
-
-        return render_template("view_song.html", data=data)
 
 
     @app.route('/api/playlists/<int:playlist_id>/add_song', methods=['POST'])

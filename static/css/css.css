@@ -1,0 +1,68 @@
+.right-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;         /* full height */
+    width: 25rem;          /* your requested width */
+    max-width: 100%;       /* prevent overflow on small screens */
+    overflow-y: auto;      /* scroll if content is long */
+    background-color: #fff;
+    border-left: 1px solid #ddd;
+    z-index: 1050;         /* above normal content */
+}
+
+.carousel-img{ 
+    display: block; 
+    width: 30vw; 
+    height: 30vw; 
+    object-fit: cover; 
+    box-shadow:0 0 1vw 34vw currentColor;
+    margin-left: auto; 
+    margin-right: auto;
+}
+
+footer {
+    height: 5rem;
+    background-color: #2b3035;
+    margin: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  padding-bottom: 6rem;
+}
+
+
+
+.responsive-img {
+    width: 100%;
+    max-width: 18rem;
+    height: 18rem;
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .responsive-img {
+    height: 5rem;
+    }
+}
+
+.responsive-cover {
+    width: 25vw;
+    aspect-ratio: 1 / 1;
+    min-width: 25rem;
+    object-fit: cover;
+}
+
+@media (max-width: 424px) {
+    .responsive-cover {
+    min-height: auto;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    min-width: auto;
+    }
+}
